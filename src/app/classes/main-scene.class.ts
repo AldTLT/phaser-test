@@ -161,13 +161,17 @@ export class MainScene extends Phaser.Scene {
 
     this.input.on(
       'gameobjectdown',
-      (pointer, object: Phaser.GameObjects.GameObject) => {
+      (pointer, object: any) => {
         if (object.getData('type') === 'point') {
           this.goCircle = true;
-          const direction = this.getDirection(this.circle, this.curve);
+          const currentCurve = this.getCurve(object, this.circle)
 
-          if (direction !== null) {
-            this.setTeen(this.path, direction);
+          this.curve = currentCurve.curve;
+
+          console.log(currentCurve);
+
+          if (currentCurve !== null) {
+            this.setTeen(this.path, currentCurve.direction);
           }
         }
       }
@@ -222,17 +226,6 @@ export class MainScene extends Phaser.Scene {
     });
   }
 
-  private getDirection(
-    object: Phaser.GameObjects.Image,
-    curve: Phaser.Curves.QuadraticBezier
-  ): number {
-    return object.x === curve.p0.x && object.y === curve.p0.y
-      ? 1
-      : object.x === curve.p2.x && object.y === curve.p2.y
-      ? 0
-      : null;
-  }
-
   private getCurve(
     point: Phaser.GameObjects.Image,
     object: Phaser.GameObjects.Image
@@ -248,9 +241,9 @@ export class MainScene extends Phaser.Scene {
       })
       .find((curve: Phaser.Curves.QuadraticBezier) => {
         d =
-          object.x === curve.p0.x && object.y === curve.p0.y
+          point.x === curve.p0.x && point.y === curve.p0.y
             ? 1
-            : object.x === curve.p2.x && object.y === curve.p2.y
+            : point.x === curve.p2.x && point.y === curve.p2.y
             ? 0
             : null;
 
